@@ -1,0 +1,355 @@
+.top-buffer { margin-top:15px; }
+
+.left-space {
+      margin-left: 40px;
+ }
+
+ .left-right-space {
+        margin-left: 10px;
+       margin-right: 10px;
+  }
+
+.bg-primary,
+.btn-primary,
+.badge-primary,
+.alert-primary,
+.panel-heading,
+.navbar-primary
+ {
+     background-image: linear-gradient(to right, #0c457d, #0c457d);
+}
+
+.btn-space {
+    margin-right: 20px;
+}
+
+.popover, .popover-title, .popover-content
+{
+    color : black;
+}
+
+.vertical-center {
+  display: flex;
+  align-items: center;
+}
+
+.panel-title>droparrow, .panel-title>droparrow:active{
+    font-size:16px;
+    font-weight:bold;
+	letter-spacing:1px;
+    word-spacing:3px;
+	text-decoration:none;
+}
+
+.panel-title {
+	padding:8px;
+    font-size:16px;
+    font-weight:bold;
+	letter-spacing:1px;
+    word-spacing:3px;
+	text-decoration:none;
+}
+
+.panel-heading  .droparrow:before {
+   font-family: 'Glyphicons Halflings';
+   content: "\e114";
+   float: right;
+   transition: transform 0.5s;
+}
+
+.panel-heading.active .droparrow:before {
+	-webkit-transform: rotate(180deg);
+	-moz-transform: rotate(180deg);
+	transform: rotate(180deg);
+}
+
+input {
+    position: relative;
+    width: 150px; height: 20px;
+    color: white;
+}
+
+input:before {
+    position: absolute;
+    content: attr(data-date);
+    display: inline-block;
+}
+
+input::-webkit-datetime-edit, input::-webkit-inner-spin-button, input::-webkit-clear-button {
+    display: none;
+}
+
+input::-webkit-calendar-picker-indicator {
+    position: absolute;
+      right: 0;
+      opacity: 1;
+}
+
+@media (min-width: 1200px) {
+  .col-lg-1-8 {
+    width: 11%;
+    float: left;
+    margin-left: 13px;
+    margin-right:13px;
+  }
+}
+
+.navbar-default {
+  background-color: #0c457d;
+  border-color: #365f87;
+}
+.navbar-default .navbar-brand {
+  color: #fff;
+}
+.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:focus {
+  transition: color 0.5s;
+  color: #85a2be;
+}
+
+.navbar-default .navbar-brand:hover, .navbar-default .navbar-brand:not(:focus) {
+  transition: color 0.5s;
+}
+
+.navbar-default .navbar-nav > li > a {
+  color: #fff;
+}
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:not(:focus) {
+  transition: color 0.5s;
+}
+
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+  transition: color 0.5s;
+  color: #85a2be;
+}
+
+.navbar-default .navbar-nav .active > a, .navbar-default .navbar-nav .active > a:hover, .navbar-default .navbar-nav .active > a:focus {
+  color: #85a2be;
+  background-color: #365f87;
+}
+.navbar-default .navbar-nav .open > a, .navbar-default .navbar-nav .open > a:hover, .navbar-default .navbar-nav .open > a:focus {
+  color: #85a2be;
+  background-color: #365f87;
+}
+.navbar-default .navbar-nav .open > a .caret, .navbar-default .navbar-nav .open > a:hover .caret, .navbar-default .navbar-nav .open > a:focus .caret {
+  border-top-color: #85a2be;
+  border-bottom-color: #85a2be;
+}
+.navbar-default .navbar-nav > .dropdown > a .caret {
+  border-top-color: #fff;
+  border-bottom-color: #fff;
+}
+.navbar-default .navbar-nav > .dropdown > a:hover .caret, .navbar-default .navbar-nav > .dropdown > a:focus .caret {
+  border-top-color: #85a2be;
+  border-bottom-color: #85a2be;
+}
+.navbar-default .navbar-toggle {
+  border-color: #365f87;
+}
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+  background-color: #365f87;
+}
+.navbar-default .navbar-toggle .icon-bar {
+  background-color: #fff;
+}
+@media (max-width: 767px) {
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a {
+    color: #fff;
+  }
+  .navbar-default .navbar-nav .open .dropdown-menu > li > a:hover, .navbar-default .navbar-nav .open .dropdown-menu > li > a:focus {
+    color: #85a2be;
+    background-color: #365f87;
+  }
+}
+
+.popover-danger {
+    background-color: #d9534f;
+    border-color: #d43f3a;
+    color: white;
+}
+
+.glyphicon-center {
+  position: absolute;
+  top: 50%;
+   left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.icon-btn {
+  text-align: center;
+  width: 32px;
+  height: 32px;
+  position: relative;
+}
+
+
+.table-striped > tbody > tr:nth-child(odd).highlight>td,
+.table-striped>tbody>tr:nth-child(odd).highlight>th {
+   background-color: #D6DBDF; // Choose your own color here
+ }
+
+ .table-hover tbody tr.highlight:hover td, .table-hover tbody tr:hover th {
+   transition: background-color 0.5s;
+   background-color: #85C1E9;
+ }
+
+ .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+    transition: background-color 0.5s;
+  }
+
+ .btn:hover {
+   transition: color 0.5s;
+   color: #85a2be;
+ }
+
+ .panel-heading  a:hover {
+    transition: color 0.5s;
+    color: #85a2be;
+  }
+
+button:focus {
+outline:0 !important;
+color: #85a2be;
+}
+
+.btn:not(:hover) {
+    transition: color 0.5s;
+}
+
+.panel-heading  a:not(:hover) {
+    transition: color 0.5s;
+ }
+
+/* Add this attribute to the element that needs a tooltip */
+[data-tooltip] {
+  position: relative;
+  z-index: 2;
+  cursor: pointer;
+}
+
+/* Hide the tooltip content by default */
+[data-tooltip]:before,
+[data-tooltip]:after {
+  visibility: hidden;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Position tooltip above the element */
+[data-tooltip]:before {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  margin-bottom: 5px;
+  margin-left: -80px;
+  padding: 7px;
+  width: 160px;
+  -webkit-border-radius: 3px;
+  -moz-border-radius: 3px;
+  border-radius: 3px;
+  background-color: #000;
+  background-color: hsla(0, 0%, 20%, 0.9);
+  color: #fff;
+  content: attr(data-tooltip);
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.2;
+}
+
+/* Triangle hack to make tooltip look like a speech bubble */
+[data-tooltip]:after {
+  position: absolute;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -5px;
+  width: 0;
+  border-top: 5px solid #000;
+  border-top: 5px solid hsla(0, 0%, 20%, 0.9);
+  border-right: 5px solid transparent;
+  border-left: 5px solid transparent;
+  content: " ";
+  font-size: 0;
+  line-height: 0;
+}
+
+/* Show tooltip content on hover */
+[data-tooltip]:hover:before,
+[data-tooltip]:hover:after {
+  visibility: visible;
+  opacity: 1;
+}
+
+.modal {
+  text-align: center;
+}
+
+@media screen and (min-width: 768px) {
+  .modal:before {
+    display: inline-block;
+    vertical-align: middle;
+    content: " ";
+    height: 100%;
+  }
+}
+
+.modal-dialog {
+  display: inline-block;
+  text-align: left;
+  vertical-align: middle;
+}
+
+.popover{
+    width:300px;
+    max-width:none;
+}
+
+.input-group-btn-vertical {
+  position: relative;
+  white-space: nowrap;
+  width: 1%;
+  vertical-align: middle;
+  display: table-cell;
+}
+.input-group-btn-vertical > .btn {
+  display: block;
+  float: none;
+  width: 100%;
+  max-width: 100%;
+  padding: 8px;
+  margin-left: -1px;
+  position: relative;
+  border-radius: 0;
+}
+.input-group-btn-vertical > .btn:first-child {
+  /*border-top-right-radius: 4px;*/
+}
+.input-group-btn-vertical > .btn:last-child {
+  margin-top: -2px;
+  /*border-bottom-right-radius: 4px;*/
+}
+.input-group-btn-vertical i{
+  position: absolute;
+  top: 0;
+  left: 4px;
+}
+
+a:hover, a:visited, a:link, a:active
+{
+    text-decoration: none;
+}
+
+a {outline : none;}
+
+.badge-standard-width
+{
+    width: 130px;
+}
+
+.badge-standard-width-larger
+{
+    width: 145px;
+}
+
+.badge-standard-width-small
+{
+    width: 60px;
+}

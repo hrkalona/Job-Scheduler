@@ -1,0 +1,1326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="css/w3.css">
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="css/custom.css">
+    <link rel="stylesheet" type="text/css" href="css/font-awesome.min.css">
+    <script src="js/jquery.min.js"></script>
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/bootbox.min.js"></script>
+    <script src="js/bootbox.locales.min.js"></script>
+    <script src="js/bootstrap-confirmation.min.js"></script>
+
+    <meta http-equiv="refresh" content="60"/>
+
+    <script>
+
+        $(document).ready(function(){
+            $('[data-toggle="popover-error"]').popover();
+        });
+
+        $(document).ready(function(){
+            $('[data-toggle="popover-info"]').popover();
+        });
+
+        $(document).ready(function(){
+
+             $(".panel .panel-collapse").on('shown.bs.collapse', function ()
+            {
+                var active = $(this).attr('id');
+                var panels= localStorage.panels === undefined ? new Array() : JSON.parse(localStorage.panels);
+                if ($.inArray(active,panels)==-1) //check that the element is not in the array
+                    panels.push(active);
+                localStorage.panels=JSON.stringify(panels);
+            });
+
+            $('.table').tableAddCounter();
+
+            $(".panel .panel-collapse").on('hidden.bs.collapse', function (event)
+            {
+                var active = $(this).attr('id');
+                var panels= localStorage.panels === undefined ? new Array() : JSON.parse(localStorage.panels);
+                var elementIndex=$.inArray(active,panels);
+                if (elementIndex!==-1) //check the array
+                {
+                    panels.splice(elementIndex,1); //remove item from array
+                }
+                localStorage.panels=JSON.stringify(panels); //save array on localStorage
+
+                event.stopPropagation();
+            });
+
+            $('.panel-collapse').on('show.bs.collapse', function (e) {
+                $(this).siblings('.panel-heading').addClass('active');
+                e.stopPropagation();
+          });
+
+          $('.panel-collapse').on('hide.bs.collapse', function (e) {
+            $(this).siblings('.panel-heading').removeClass('active');
+             $(this).find('.collapse').collapse('hide');
+            e.stopPropagation();
+          });
+
+            var panels=localStorage.panels === undefined ? new Array() : JSON.parse(localStorage.panels); //get all panels
+                for (var i in panels){ //<-- panel is the name of the cookie
+                    if ($("#"+panels[i]).hasClass('panel-collapse')) // check if this is a panel
+                    {
+                        $("#"+panels[i]).collapse("show");
+                    }
+                }
+        });
+
+        function expand() {
+            $('.collapse').collapse('show');
+        }
+                function collapse() {
+            $('.collapse').collapse('hide');
+        };
+
+
+        $(document).ready(function(){
+            $('[data-toggle=confirmation]').confirmation({
+              rootSelector: '[data-toggle=confirmation]',
+              // other options
+            });
+         });
+
+         (function ($) {
+    $.fn.extend({
+        tableAddCounter: function (options) {
+
+            // set up default options
+            var defaults = {
+                title: '#',
+                start: 1,
+                id: false,
+                cssClass: false
+            };
+
+            // Overwrite default options with user provided
+            var options = $.extend({}, defaults, options);
+
+            return $(this).each(function () {
+                // Make sure this is a table tag
+                if ($(this).is('table')) {
+
+                    // Add column title unless set to 'false'
+                    if (!options.title) options.title = '';
+                    $('th:first-child, thead td:first-child', this).each(function () {
+                        var tagName = $(this).prop('tagName');
+                        $(this).before('<' + tagName + ' rowspan="' + $('thead tr').length + '" class="' + options.cssClass + '" id="' + options.id + '">' + options.title + '</' + tagName + '>');
+                    });
+
+                    // Add counter starting counter from 'start'
+                    $('tbody td:first-child', this).each(function (i) {
+                        $(this).before('<td>' + (options.start + i) + '</td>');
+                    });
+
+                }
+            });
+        }
+    });
+})(jQuery);
+
+function post(path, params, method) {
+            method = method || "post"; // Set method to post by default if not specified.
+
+            // The rest of this code assumes you are not using a library.
+            // It can be made less wordy if you use one.
+            var form = document.createElement("form");
+            form.setAttribute("method", method);
+            form.setAttribute("action", path);
+
+            for(var key in params) {
+                if(params.hasOwnProperty(key)) {
+                    var hiddenField = document.createElement("input");
+                    hiddenField.setAttribute("type", "hidden");
+                    hiddenField.setAttribute("name", key);
+                    hiddenField.setAttribute("value", params[key]);
+
+                    form.appendChild(hiddenField);
+                }
+            }
+
+            document.body.appendChild(form);
+            form.submit();
+        }
+
+        function onDeletePipeline() {
+            var id = $(this)[0].getAttribute('data-group');
+            if(id == null) {
+                id = "";
+            }
+            post('remove_pipeline', {pipeline_id: id});
+        }
+
+        function onDeleteTags() {
+            var id = $(this)[0].getAttribute('data-group');
+            if(id == null) {
+                id = "";
+            }
+            post('remove_tags', {pipeline_id: id});
+        }
+
+        function onDeleteJob() {
+            var job_id = $(this)[0].getAttribute('data-group');
+            var pipeline_id = $(this)[0].getAttribute('data-group2');
+            var tag_id = $(this)[0].getAttribute('data-group3');
+            var uuid = $(this)[0].getAttribute('data-group4');
+            if(pipeline_id == null) {
+                pipeline_id = "";
+            }
+            if(tag_id == null) {
+                tag_id = "";
+            }
+            if(job_id == null) {
+                job_id = "";
+            }
+            if(uuid == null) {
+                uuid = "";
+            }
+            post('remove_job', {pipeline_id : pipeline_id, job : job_id, tag : tag_id, uuid : uuid});
+        }
+
+        function onDeleteTag() {
+            var tag_id = $(this)[0].getAttribute('data-group');
+            var pipeline_id = $(this)[0].getAttribute('data-group2');
+            if(tag_id == null) {
+                tag_id = "";
+            }
+            if(pipeline_id == null) {
+                pipeline_id = "";
+            }
+            post('remove_tag', {pipeline_id: pipeline_id, tag: tag_id});
+        }
+
+        function onDeleteJobs() {
+            var tag_id = $(this)[0].getAttribute('data-group');
+            var pipeline_id = $(this)[0].getAttribute('data-group2');
+            if(tag_id == null) {
+                tag_id = "";
+            }
+            if(pipeline_id == null) {
+                pipeline_id = "";
+            }
+            post('remove_jobs', {pipeline_id: pipeline_id, tag: tag_id});
+        }
+
+        function onDeleteVariable() {
+            var variable_name = $(this)[0].getAttribute('data-group');
+            var pipeline_id = $(this)[0].getAttribute('data-group2');
+            if(variable_name == null) {
+                variable_name = "";
+            }
+            if(pipeline_id == null) {
+                pipeline_id = "";
+            }
+            post('remove_variable', {pipeline_id: pipeline_id, variable_name: variable_name});
+        }
+
+        function onDeleteVariables() {
+            var pipeline_id = $(this)[0].getAttribute('data-group');
+            if(pipeline_id == null) {
+                pipeline_id = "";
+            }
+            post('remove_variables', {pipeline_id: pipeline_id});
+        }
+
+        function onDeleteAll() {
+            post('remove_all');
+        }
+
+        function onShutdown() {
+            post('shutdown');
+        }
+
+        function addTag(clicked_object) {
+
+            var pipeline_id = clicked_object.getAttribute('data-group');
+
+            bootbox.prompt({
+                title: "<span class='fa fa-tag'/>  Add a new Tag",
+                message: "<p>The tag will be added to the pipeline with id <b>" + pipeline_id + "</b>.<br>Insert the tag.</p>",
+                buttons: {
+                    cancel: {
+                        label: '<span class="glyphicon glyphicon-remove"></span> Cancel',
+                        className: 'btn-danger pull-right'
+                    },
+                    confirm: {
+                        label: '<span class="glyphicon glyphicon-ok"></span> Ok',
+                        className: 'btn-primary left-right-space'
+                    }
+                },
+                callback: function (result) {
+                     if(result != null) {
+                        post('add_tag', {pipeline_id: pipeline_id, tag: result});
+                     }
+                }
+            });
+        }
+
+        function addPipeline() {
+            bootbox.prompt({
+                title: "<span class='fa fa-tasks'/>  Add a new Pipeline",
+                message: "<p>Insert the pipeline id.</p>",
+                buttons: {
+                    cancel: {
+                        label: '<span class="glyphicon glyphicon-remove"></span> Cancel',
+                        className: 'btn-danger pull-right'
+                    },
+                    confirm: {
+                        label: '<span class="glyphicon glyphicon-ok"></span> Ok',
+                        className: 'btn-primary left-right-space'
+                    }
+                },
+                callback: function (result) {
+                     if (result !== null && result != "") {
+                        post('add_pipeline', {pipeline_id: result});
+                     }
+                }
+            });
+        }
+
+        function addVariable(clicked_object) {
+
+            var pipeline_id = clicked_object.getAttribute('data-group');
+
+            var box = bootbox.dialog({
+                title: "<span class='fa fa-cogs'/>  Add a new Variable",
+                message: "<p>The variable will be added to the pipeline with id <b>" + pipeline_id + "</b></p><p>Insert the variable name.</p><input id=\"variable_name\" class=\"form-control\" type=\"text\"/><p>Insert the variable value.</p><input id=\"variable_value\" class=\"form-control\" type=\"text\"/>",
+                buttons: {
+                    cancel: {
+                        label: '<span class="glyphicon glyphicon-remove"></span> Cancel',
+                        className: 'btn-danger pull-right'
+                    },
+                    confirm: {
+                        label: '<span class="glyphicon glyphicon-ok"></span> Ok',
+                        className: 'btn-primary left-right-space',
+                        callback: function () {
+                             var variable_value = $('#variable_value').val();
+                             var variable_name = $('#variable_name').val();
+
+                             if (variable_name !== null && variable_name != "" && variable_value !== null && variable_value != "") {
+                                post('add_variable', {pipeline_id : pipeline_id, variable_name: variable_name, variable_value : variable_value});
+                             }
+                        }
+                    }
+                }
+            });
+
+            box.on('shown.bs.modal',function(){
+                $("#variable_name").focus();
+            });
+        }
+
+        function editVariable(clicked_object) {
+
+            var pipeline_id = clicked_object.getAttribute('data-group');
+            var variable_name = clicked_object.getAttribute('data-group2');
+            var variable_value = clicked_object.getAttribute('data-group3');
+
+            var box = bootbox.dialog({
+                title: "<span class='fa fa-cogs'/>  Edit Variable",
+                message: "<p>The variable belongs to the pipeline with id <b>" + pipeline_id + "</b></p><p>Variable name.</p><input value=\"" + variable_name + "\" readonly=\"readonly\" style=\"background-color : #d1d1d1\" id=\"variable_name\" class=\"form-control\" type=\"text\"/><p>Edit the variable value.</p><input value=\"" + variable_value + "\" id=\"variable_value\" class=\"form-control\" type=\"text\"/>",
+                buttons: {
+                    cancel: {
+                        label: '<span class="glyphicon glyphicon-remove"></span> Cancel',
+                        className: 'btn-danger pull-right'
+                    },
+                    confirm: {
+                        label: '<span class="glyphicon glyphicon-ok"></span> Ok',
+                        className: 'btn-primary left-right-space',
+                        callback: function () {
+                             var variable_value = $('#variable_value').val();
+
+                             if (variable_name !== null && variable_name != "" && variable_value !== null && variable_value != "") {
+                                post('add_variable', {pipeline_id : pipeline_id, variable_name: variable_name, variable_value : variable_value});
+                             }
+                        }
+                    }
+                }
+            });
+
+            box.on('shown.bs.modal',function(){
+                $("#variable_value").focus();
+            });
+        }
+
+        function addJob(clicked_object) {
+
+            var pipeline_id = clicked_object.getAttribute('data-group');
+            var tag = clicked_object.getAttribute('data-group2');
+            var tagSanitized = clicked_object.getAttribute('data-group3');
+
+            if(tag == null) {
+                tag = "";
+            }
+
+            var box = bootbox.dialog({
+                title: "<span class='fa fa-bolt'/>  Add a new Job",
+                message: "<p>The job will be added to the pipeline with id <b>" + pipeline_id + "</b>, under the tag '<b>" + tagSanitized + "</b>'</p><p>Insert the job.</p><input id=\"job\" class=\"form-control\" type=\"text\" placeholder=\"The name or the identifier of the job\"/><p>Insert the priority.</p><input id=\"priority\" class=\"form-control\" type=\"text\" value=\"1\" pattern=\"0|[1-9]+[0-9]*\"/><p>Insert the quantity.</p><input id=\"quantity\" class=\"form-control\" type=\"text\" value=\"1\" pattern=\"0|[1-9]+[0-9]*\"/><p>Insert any additional data.</p><input id=\"additional\" class=\"form-control\" type=\"text\" placeholder=\"Add any text\"/><p>Insert any parameters.</p><input id=\"parameters\" class=\"form-control\" type=\"text\" placeholder=\"Add parameters in a key:value format, separated by comma (,)\"/><p>Is the job consistent?</p><input id=\"consistent\" type=\"checkbox\" checked><p>Use time for priority?</p><input id=\"use_time\" type=\"checkbox\" checked>",
+                buttons: {
+                    cancel: {
+                        label: '<span class="glyphicon glyphicon-remove"></span> Cancel',
+                        className: 'btn-danger pull-right'
+                    },
+                    confirm: {
+                        label: '<span class="glyphicon glyphicon-ok"></span> Ok',
+                        className: 'btn-primary left-right-space',
+                        callback: function () {
+                             var job = $('#job').val();
+                             var priority = $('#priority').val();
+                             var consistent = $('#consistent:checked').val();
+                             var additional = $('#additional').val();
+                             var parameters = $('#parameters').val();
+                             var use_time = $('#use_time:checked').val();
+                             var quantity = $('#quantity').val();
+
+                             priority = parseInt(priority);
+                             if(isNaN(priority)) {
+                                priority = 0;
+                             }
+
+                             quantity = parseInt(quantity);
+                             if(isNaN(quantity)) {
+                                quantity = 1;
+                             }
+
+                             if(use_time === undefined || use_time === null ) {
+                                use_time = false;
+                             }
+                              else {
+                                use_time = true;
+                             }
+
+                             if(consistent === undefined || consistent === null ) {
+                                consistent = false;
+                             }
+                             else {
+                                consistent = true;
+                             }
+
+                             if (job !== null && job != "") {
+                                post('add_job', {pipeline_id : pipeline_id, job : job, priority: priority, tag: tag, consistent : consistent, additional : additional, use_time : use_time, quantity : quantity, parameters : parameters});
+                             }
+                        }
+                    }
+                }
+            });
+
+            box.on('shown.bs.modal',function(){
+                $("#job").focus();
+            });
+        }
+
+    </script>
+</head>
+<body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid vertical-center">
+        <img src="images/balancer.svg" width="60px" height="60px" class="left-right-space"/>
+        <div class="navbar-header">
+            <a class="navbar-brand" href="dashboard">Job Scheduler</a>
+        </div>
+        <ul class="nav navbar-nav">
+            <li class="active"><a href="dashboard">Dashboard</a></li>
+            <li><a href="statistics">Statistics</a></li>
+        </ul>
+    </div>
+
+</nav>
+
+<div class="row top-buffer left-right-space">
+
+    <div class="vertical-center pull-left left-right-space">
+        <div class="pull-right left-right-space">
+            <button class="icon-btn btn btn-primary btn-block" data-tooltip="Add Pipeline" type="button" onclick="addPipeline()"><span class="glyphicon-center fa fa-plus"></span></button>
+        </div>
+
+        <div class="pull-left left-right-space">
+            <button class="icon-btn btn btn-primary btn-block" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{All the pipelines (<b>} + ${schedulerModel.getSchedulerModel().size()}+ @{</b>) and their jobs (<b>} + ${schedulerModel.getAggregateRemainingJobCount()}+ @{</b>) will be removed.}" data-on-confirm="onDeleteAll" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove All Pipelines" type="button"><span class="glyphicon-center glyphicon glyphicon-trash"></span></button>
+        </div>
+
+        <div class="pull-left left-right-space">
+            <button class="icon-btn btn btn-primary btn-block" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{The scheduler will shutdown.<br><br>All the pipelines (<b>} + ${schedulerModel.getSchedulerModel().size()}+ @{</b>) and their jobs (<b>} + ${schedulerModel.getAggregateRemainingJobCount()}+ @{</b>) will be removed.}" data-on-confirm="onShutdown" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Shutdown Scheduler" type="button"><span class="glyphicon-center fa fa-power-off"></span></button>
+        </div>
+    </div>
+
+    <div class="vertical-center pull-right left-right-space">
+        <div class="pull-right left-right-space">
+            <button class="icon-btn btn btn-primary btn-block" data-tooltip="Expand All" type="button" onclick="expand()"><span class="glyphicon-center glyphicon glyphicon-eye-open"></span></button>
+        </div>
+        <div class="pull-right left-right-space">
+            <button class="icon-btn btn btn-primary btn-block" data-tooltip="Collapse All" type="button" onclick="collapse()"><span class="glyphicon-center glyphicon glyphicon-eye-close"></span></button>
+        </div>
+    </div>
+</div>
+
+<div class="row top-buffer"></div>
+
+<div class="row left-right-space">
+    <div class="col-lg-12">
+
+        <div class="panel-group">
+            <div class="panel panel-primary">
+                <div class="panel-heading" style="background-image: linear-gradient(to right, #0a1826, #0a1826);border-color : #0a1826;">
+                    <h3 class="panel-title">
+                        <span class="fa fa-heartbeat"></span>
+                        <a class="left-right-space droparrow" data-toggle="collapse" th:href="@{#collapse} + @{scheduler_overview}" th:text="@{Scheduler Overview}"> </a>
+                        <div class="w3-light-grey w3-small w3-round-xlarge" style="width:230px;display: inline-block">
+                            <div th:if="${schedulerModel.getCompletionFactor() == 1}" class="w3-container w3-green w3-round-xlarge w3-center progress-bar-striped" th:style="${T(job_scheduler.util.Util).convertFactorToColor(1.0)} + @{!important;width:100%}">100%</div>
+                            <div th:if="${schedulerModel.getCompletionFactor() == -1}" class="w3-container w3-green w3-round-xlarge w3-center progress-bar-striped" th:style="${T(job_scheduler.util.Util).convertFactorToColor(schedulerModel.getCompletionFactor())} + @{!important;width:100%}">N/A</div>
+                            <div th:if="${schedulerModel.getCompletionFactor() != -1 && schedulerModel.getCompletionFactor() != 1}" class="w3-container w3-green w3-round-xlarge w3-center progress-bar-striped" th:style="${T(job_scheduler.util.Util).convertFactorToColor(schedulerModel.getCompletionFactor())} + @{!important;-webkit-animation:progress-bar-stripes 2s linear infinite;-o-animation:progress-bar-stripes 2s linear infinite;animation:progress-bar-stripes 2s linear infinite;width:} + ${schedulerModel.getCompletionValue()} + @{%}" th:text="${schedulerModel.getCompletionValue()} + @{%}"/>
+                        </div>
+                        <span class="badge badge-standard-width-larger" th:text="@{Stability:} + ' ' + ${schedulerModel.getAggregateStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(schedulerModel.getAggregateStability())}></span>
+                        <span class="badge pull-right left-right-space" th:text="${T(job_scheduler.util.Util).formatPipelineCount(schedulerModel.getSchedulerModel().size())}" style="color: Green;"/>
+                    </h3>
+                </div>
+                <div th:id="@{collapse} + @{scheduler_overview}" class="panel-collapse collapse">
+
+                    <div class="row top-buffer"></div>
+
+                    <div class="row left-right-space">
+
+                            <table class="table table-striped table-bordered table-condensed table-hover">
+                                <caption style="border: inherit; background-color: #f6f6f8;">
+                                    <span class="left-right-space fa fa-bar-chart"></span>
+                                    <strong><span class="align-left">Session Statistics</span></strong>
+                                </caption>
+
+                                <thead>
+                                <tr>
+                                    <th class="text-right">Up-time</th>
+                                    <th class="text-right">Session</th>
+                                    <th class="text-right">Successful Jobs</th>
+                                    <th class="text-right">Failed Jobs</th>
+                                    <th class="text-right">Total Jobs</th>
+                                    <th class="text-center">Job Stability</th>
+                                    <th class="text-right">Successful Pipelines</th>
+                                    <th class="text-right">Failed Pipelines</th>
+                                    <th class="text-right">Undetermined Pipelines</th>
+                                    <th class="text-right">Completed Pipelines</th>
+                                    <th class="text-center">Pipeline Stability</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="highlight">
+                                    <td class="text-right" th:text="${schedulerModel.getFormattedUpTime()}"/>
+                                    <td class="text-right">
+                                         <span >
+
+                                           <button class="left-right-space icon-btn btn btn-primary" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button" data-placement="bottom" data-html="true" data-toggle="popover-info" title="Session Information" data-tooltip="Session Information" th:data-content="@{Started:} + ' ' + ${schedulerModel.getInitializationTimestamp()} + '<br>' + @{Registered Pipelines:} + ' ' + ${schedulerModel.getSessionRegisteredPipelines()} + '<br>' + @{Registered Tags:} + ' ' + ${schedulerModel.getSessionRegisteredTags()} + '<br>' + @{Registered Jobs:} + ' ' + ${schedulerModel.getSessionRegisteredJobs()} + '<br>' + @{Registered Variables:} + ' ' + ${schedulerModel.getSessionRegisteredVariables()}"><span class="glyphicon-center fa fa-pie-chart"></span></button>
+
+                                         </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span th:text="${schedulerModel.getSessionSuccessfulJobs()}"/>
+                                        <span>
+                                <img src="images/ok.svg" width="22px" height="22px"/>
+                            </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span th:text="${schedulerModel.getSessionFailedJobs()}"/>
+                                        <span>
+                                            <img src="images/error.svg" width="22px" height="22px"/>
+                                        </span>
+                                    </td>
+
+                                    <td class="text-right">
+                                        <span th:text="${schedulerModel.getSessionTotalJobs()}"/>
+                                        <span>
+                                              <img src="images/info.svg" width="20px" height="20px"/>
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="badge badge-standard-width-small" th:text="${schedulerModel.getSessionStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(schedulerModel.getSessionStability())}></span>
+                                    </td>
+
+                                    <td class="text-right">
+                                        <span th:text="${schedulerModel.getSessionSucceedPipelines()}"/>
+                                        <span>
+                                        <img src="images/ok.svg" width="22px" height="22px"/>
+                                     </span>
+                                    </td>
+
+                                    <td class="text-right">
+                                        <span th:text="${schedulerModel.getSessionFailedPipelines()}"/>
+                                        <span>
+                                            <img src="images/error.svg" width="22px" height="22px"/>
+                                        </span>
+                                    </td>
+
+                                    <td class="text-right">
+                                        <span th:text="${schedulerModel.getSessionUndeterminedPipelines()}"/>
+                                        <span>
+                                            <img src="images/question.svg" width="22px" height="22px"/>
+                                        </span>
+                                    </td>
+
+                                    <td class="text-right">
+                                        <span th:text="${schedulerModel.getSessionCompletedPipelines()}"/>
+                                        <span>
+                                        <img src="images/info.svg" width="22px" height="22px"/>
+                                     </span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="badge badge-standard-width-small" th:text="${schedulerModel.getSessionPipelineStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(schedulerModel.getSessionPipelineStability())}></span>
+                                    </td>
+
+                                </tr>
+
+                                </tbody>
+
+                            </table>
+
+                            <table class="table table-striped table-bordered table-condensed table-hover">
+                                <caption style="border: inherit; background-color: #f6f6f8;">
+                                    <span class="left-right-space fa fa-spin fa-cog"></span>
+                                    <strong><span class="align-left">Active Pipelines Statistics</span></strong>
+                                </caption>
+
+                                <thead>
+                                <tr>
+                                    <th class="text-right">Pipelines</th>
+                                    <th class="text-right">Remaining Jobs</th>
+                                    <th class="text-right">Registered Jobs</th>
+                                    <th class="text-center">Progress</th>
+                                    <th class="text-right">Successful Jobs</th>
+                                    <th class="text-right">Failed Jobs</th>
+                                    <th class="text-right">Total Jobs</th>
+                                    <th class="text-center">Job Stability</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="highlight">
+                                    <td class="text-right" th:text="${schedulerModel.getSchedulerModel().size()}"/>
+                                    <td class="text-right" th:text="${schedulerModel.getAggregateRemainingJobCount()}"/>
+                                    <td class="text-right" th:text="${schedulerModel.getAggregateRegisteredJobCount()}"/>
+                                    <td class="text-center">
+                                        <span class="badge badge-standard-width-small" th:text="${schedulerModel.getCompletionFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(schedulerModel.getCompletionFactor())}></span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span th:text="${schedulerModel.getAggregateSuccessfulJobCount()}"/>
+                                        <span>
+                                <img src="images/ok.svg" width="22px" height="22px"/>
+                            </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span th:text="${schedulerModel.getAggregateFailedJobCount()}"/>
+                                        <span>
+                                            <img src="images/error.svg" width="22px" height="22px"/>
+                                        </span>
+                                    </td>
+
+                                    <td class="text-right">
+                                        <span th:text="${schedulerModel.getAggregateTotalJobCount()}"/>
+                                        <span>
+                                              <img src="images/info.svg" width="20px" height="20px"/>
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="badge badge-standard-width-small" th:text="${schedulerModel.getAggregateStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(schedulerModel.getAggregateStability())}></span>
+                                    </td>
+
+                                </tr>
+
+                                </tbody>
+
+                            </table>
+
+                        <table class="table table-striped table-bordered table-condensed table-hover">
+                            <caption style="border: inherit; background-color: #f6f6f8;">
+                                <span class="left-right-space fa fa-history"></span>
+                                <strong><span class="align-left">Pipeline History Statistics</span></strong>
+                            </caption>
+
+                            <thead>
+                            <tr>
+                                <th class="text-right">Registered Pipelines</th>
+                                <th class="text-right">Average Jobs Per Pipeline</th>
+                                <th class="text-right">Average Completion Time</th>
+                                <th class="text-right">Successful Pipelines</th>
+                                <th class="text-right">Failed Pipelines</th>
+                                <th class="text-right">Undetermined Pipelines</th>
+                                <th class="text-right">Completed Pipelines</th>
+                                <th class="text-center">Pipeline Stability</th>
+                                <th class="text-center">Average Job Stability</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="highlight">
+                                <td class="text-right" th:text="${pipelineStatisticsModel.getRegistered_pipelines()}"/>
+                                <td class="text-right" th:text="${pipelineStatisticsModel.getAverage_pipeline_jobsFormatted()}"/>
+                                <td class="text-right" th:text="${pipelineStatisticsModel.getFormattedAverageCompletionTime()}"/>
+                                <td class="text-right">
+                                    <span th:text="${pipelineStatisticsModel.getSucceed_pipelines()}"/>
+                                    <span>
+                                        <img src="images/ok.svg" width="22px" height="22px"/>
+                                    </span>
+                                </td>
+                                <td class="text-right">
+                                    <span th:text="${pipelineStatisticsModel.getFailed_pipelines()}"/>
+                                    <span>
+                                            <img src="images/error.svg" width="22px" height="22px"/>
+                                        </span>
+                                </td>
+                                <td class="text-right">
+                                    <span th:text="${pipelineStatisticsModel.getUndetermined_pipelines()}"/>
+                                    <span>
+                                        <img src="images/question.svg" width="22px" height="22px"/>
+                                    </span>
+                                </td>
+                                <td class="text-right">
+                                    <span th:text="${pipelineStatisticsModel.getCompleted_pipelines()}"/>
+                                    <span>
+                                              <img src="images/info.svg" width="20px" height="20px"/>
+                                        </span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge badge-standard-width-small" th:text="${pipelineStatisticsModel.getPipelineStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(pipelineStatisticsModel.getPipelineStability())}></span>
+                                </td>
+                                <td class="text-center">
+                                    <span class="badge badge-standard-width-small" th:text="${pipelineStatisticsModel.getAveragePipelineJobStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(pipelineStatisticsModel.getAverage_pipeline_jobs_stability())}></span>
+                                </td>
+                            </tr>
+
+                            </tbody>
+
+                        </table>
+
+                            <table class="table table-striped table-bordered table-condensed table-hover">
+                                <caption style="border: inherit; background-color: #f6f6f8;">
+                                    <span class="left-right-space fa fa-line-chart"></span>
+                                    <strong><span class="align-left">All Job Statistics</span></strong>
+                                </caption>
+
+                                <thead>
+                                <tr>
+                                    <th class="text-right">Average Time</th>
+                                    <th class="text-right">Successful Jobs</th>
+                                    <th class="text-right">Failed Jobs</th>
+                                    <th class="text-right">Total Jobs</th>
+                                    <th class="text-center">Job Stability</th>
+                                    <th/>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="highlight">
+                                    <td class="text-right" th:text="${jobsStatisticsModel.getAggregateAverageTime()}"/>
+                                    <td class="text-right">
+                                        <span th:text="${jobsStatisticsModel.getAggregateSuccessCount()}"/>
+                                        <span>
+                                        <img src="images/ok.svg" width="22px" height="22px"/>
+                                    </span>
+                                    </td>
+                                    <td class="text-right">
+                                        <span th:text="${jobsStatisticsModel.getAggregateFailureCount()}"/>
+                                        <span>
+                                            <img src="images/error.svg" width="22px" height="22px"/>
+                                        </span>
+                                    </td>
+
+                                    <td class="text-right">
+                                        <span th:text="${jobsStatisticsModel.getAggregateTotalExecutions()}"/>
+                                        <span>
+                                              <img src="images/info.svg" width="20px" height="20px"/>
+                                        </span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span class="badge badge-standard-width-small" th:text="${jobsStatisticsModel.getAggregateStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(jobsStatisticsModel.getAggregateStability())}></span>
+                                    </td>
+
+                                    <td class="text-center">
+                                        <span><button class="icon-btn btn btn-primary" data-tooltip="All Statistics" type="submit" form="go_to_statistics" style="width :18px;height :18px; border: none;"><span class="glyphicon-center fa fa-bar-chart"></span></button></span>
+                                    </td>
+
+                                </tr>
+
+                                </tbody>
+
+                            </table>
+                    </div>
+
+
+                </div>
+            </div>
+            <div th:each="scheduler_model : ${schedulerModel.getSchedulerModel().entrySet()}" class="panel panel-primary">
+                <div class="panel-heading">
+                    <h3 class="panel-title">
+                        <span class="fa fa-tasks"></span>
+                        <a class="left-right-space droparrow" data-toggle="collapse" th:href="@{#collapse} + ${scheduler_model.getKey()}" th:text="${scheduler_model.getKey()}"> </a>
+
+                        <span class="pull-right left-right-space" th:switch="${scheduler_model.getValue().getPipelineSettings().getStatus()}">
+                                <img th:case="${T(job_scheduler.core.PipelineSettings).UNINITIALIZED}" src="images/question.svg" width="22px" height="22px"/>
+                                <img th:case="${T(job_scheduler.core.PipelineSettings).FAILED}" src="images/error.svg" width="22px" height="22px"/>
+                                <img th:case="${T(job_scheduler.core.PipelineSettings).OK}" src="images/ok.svg" width="22px" height="22px"/>
+                        </span>
+
+                        <span class="badge pull-right left-right-space badge-standard-width" th:text="@{Status:} + ' ' + ${scheduler_model.getValue().getServedJobsStatusStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(scheduler_model.getValue().getServedJobsStatusStability())}></span>
+
+                        <span class="badge" th:text="@{#} + ${scheduler_model.getValue().getPipelineSettings().getId()}" style="color: #058ac6;"/>
+                        <div class="w3-light-grey w3-small w3-round-xlarge" style="width:230px;display: inline-block">
+                            <div th:if="${scheduler_model.getValue().getCompletionFactor() == 1}" class="w3-container w3-green w3-round-xlarge w3-center progress-bar-striped" th:style="${T(job_scheduler.util.Util).convertFactorToColor(1.0)} + @{!important;width:100%}">100%</div>
+                            <div th:if="${scheduler_model.getValue().getCompletionFactor() == -1}" class="w3-container w3-green w3-round-xlarge w3-center progress-bar-striped" th:style="${T(job_scheduler.util.Util).convertFactorToColor(scheduler_model.getValue().getCompletionFactor())} + @{!important;width:100%}">N/A</div>
+                            <div th:if="${scheduler_model.getValue().getCompletionFactor() != -1 && scheduler_model.getValue().getCompletionFactor() != 1}" class="w3-container w3-green w3-round-xlarge w3-center progress-bar-striped" th:style="${T(job_scheduler.util.Util).convertFactorToColor(scheduler_model.getValue().getCompletionFactor())} + @{!important;-webkit-animation:progress-bar-stripes 2s linear infinite;-o-animation:progress-bar-stripes 2s linear infinite;animation:progress-bar-stripes 2s linear infinite;width:} + ${scheduler_model.getValue().getCompletionValue()} + @{%}" th:text="${scheduler_model.getValue().getCompletionValue()} + @{%}"/>
+                        </div>
+                        <span class="badge badge-standard-width-larger" th:text="@{Stability:} + ' ' + ${scheduler_model.getValue().getStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(scheduler_model.getValue().getStability())}></span>
+
+                        <button class="left-right-space pull-right icon-btn btn btn-primary" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{<b>} + ${T(job_scheduler.util.Util).formatTagCount(scheduler_model.getValue().getPipelineMap().size())} + @{</b> and <b>} + ${T(job_scheduler.util.Util).formatJobCount(scheduler_model.getValue().getAggregateRemainingJobCount())} + @{</b>, will be removed from this pipeline (<b>} + ${scheduler_model.getKey()} + '</b>)'" th:data-group="${scheduler_model.getKey()}" data-on-confirm="onDeleteTags" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove All Tags" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button"><span class="glyphicon-center glyphicon glyphicon-trash"></span></button>
+                        <button th:if="${scheduler_model.getValue().getAggregateRemainingJobCount() == 0}" class="left-right-space pull-right icon-btn btn btn-primary" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{This pipeline (<b>} + ${scheduler_model.getKey()}+ @{</b>) will be removed.}" th:data-group="${scheduler_model.getKey()}" data-on-confirm="onDeletePipeline" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove Pipeline" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button"><span class="glyphicon-center fa fa-minus"></span></button>
+                        <button th:if="${scheduler_model.getValue().getAggregateRemainingJobCount() > 0}" class="left-right-space pull-right icon-btn btn btn-primary" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{This pipeline (<b>} + ${scheduler_model.getKey()}+ @{</b>), which contains} + ' <b>' + ${T(job_scheduler.util.Util).formatJobCount(scheduler_model.getValue().getAggregateRemainingJobCount())} + '</b>, ' + @{will be removed.}" th:data-group="${scheduler_model.getKey()}" data-on-confirm="onDeletePipeline" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove Pipeline" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button"><span class="glyphicon-center fa fa-minus"></span></button>
+                        <button class="left-right-space pull-right icon-btn btn btn-primary" th:data-group="${scheduler_model.getKey()}" onclick="addTag(this)" data-tooltip="Add Tag" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button"><span class="glyphicon-center fa fa-plus"></span></button>
+                        <span class="badge pull-right left-right-space" th:text="@{Registered:} + ' ' + ${T(job_scheduler.util.Util).formatJobCount(scheduler_model.getValue().getAggregateRegisteredJobCount())}" style="color: Green;"/>
+                        <span class="badge pull-right left-right-space" th:text="@{Remaining:} + ' ' + ${T(job_scheduler.util.Util).formatJobCount(scheduler_model.getValue().getAggregateRemainingJobCount())}" style="color: Green;"/>
+                        <span class="badge pull-right left-right-space" th:text="${T(job_scheduler.util.Util).formatTagCount(scheduler_model.getValue().getPipelineMap().size())}" style="font-size:11;color: red;"></span>
+
+                    </h3>
+                </div>
+                <div th:id="@{collapse} + ${scheduler_model.getKey()}" class="panel-collapse collapse">
+
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <div class="row left-right-space">
+
+                                <div class="panel-group">
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading" style="background-image: linear-gradient(to right, #050c13, #050c13);border-color : #050c13;">
+                                            <h3 class="panel-title">
+                                                <span class="fa fa-heartbeat"></span>
+                                                <a class="left-right-space droparrow" data-toggle="collapse" th:href="@{#collapse} + ${scheduler_model.getKey()} + @{pipeline_overview}" th:text="@{Overview}"> </a>
+                                            </h3>
+                                        </div>
+                                        <div th:id="@{collapse} + ${scheduler_model.getKey()} + @{pipeline_overview}" class="panel-collapse collapse">
+
+                                            <div class="row top-buffer"></div>
+
+                                            <div class="row left-right-space">
+                                                <table class="table table-striped table-bordered table-condensed table-hover">
+                                                    <caption style="border: inherit; background-color: #f6f6f8;">
+                                                        <span class="left-right-space fa fa-pie-chart"></span>
+                                                        <strong><span class="align-left">Pipeline Statistics</span></strong>
+                                                    </caption>
+
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="text-right">Creation Timestamp</th>
+                                                        <th class="text-right">Up-time</th>
+                                                        <th class="text-right">Remaining Jobs</th>
+                                                        <th class="text-right">Registered Jobs</th>
+                                                        <th class="text-center">Progress</th>
+                                                        <th class="text-right">Successful Jobs</th>
+                                                        <th class="text-right">Failed Jobs</th>
+                                                        <th class="text-right">Total Jobs</th>
+                                                        <th class="text-center">Job Stability</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr class="highlight">
+                                                        <td class="text-right" th:text="${scheduler_model.getValue().getPipelineSettings().getTimeStamp()}"/>
+                                                        <td class="text-right" th:text="${scheduler_model.getValue().getFormattedUpTime()}"/>
+                                                        <td class="text-right" th:text="${scheduler_model.getValue().getAggregateRemainingJobCount()}"/>
+                                                        <td class="text-right" th:text="${scheduler_model.getValue().getAggregateRegisteredJobCount()}"/>
+                                                        <td class="text-center">
+                                                            <span class="badge badge-standard-width-small" th:text="${scheduler_model.getValue().getCompletionFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(scheduler_model.getValue().getCompletionFactor())}></span>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span th:text="${scheduler_model.getValue().getSuccessfulJobCount()}"/>
+                                                            <span>
+                                                                <img src="images/ok.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span th:text="${scheduler_model.getValue().getFailedJobCount()}"/>
+                                                            <span>
+                                                                <img src="images/error.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span th:text="${scheduler_model.getValue().getTotalJobCount()}"/>
+                                                            <span>
+                                                                <img src="images/info.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="badge badge-standard-width-small" th:text="${scheduler_model.getValue().getStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(scheduler_model.getValue().getStability())}></span>
+                                                        </td>
+
+                                                    </tr>
+                                                    </tbody>
+
+                                                </table>
+
+                                                <table class="table table-striped table-bordered table-condensed table-hover">
+                                                    <caption style="border: inherit; background-color: #f6f6f8;">
+                                                        <span class="left-right-space fa fa-info-circle"></span>
+                                                        <strong><span class="align-left">Pipeline Status</span></strong>
+                                                    </caption>
+
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="text-right">Undetermined Jobs (Final)</th>
+                                                        <th class="text-right">Successful Jobs (Final)</th>
+                                                        <th class="text-right">Failed Jobs (Final)</th>
+                                                        <th class="text-right">Total Jobs (Final)</th>
+                                                        <th class="text-center">Status (%)</th>
+                                                        <th class="text-center">Status</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr class="highlight">
+
+
+                                                        <td class="text-right">
+                                                        <span th:text="${scheduler_model.getValue().getServedJobsStatusUndeterminedCount()}"/>
+                                                        <span>
+                                                                <img src="images/question.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right">
+                                                        <span th:text="${scheduler_model.getValue().getServedJobsStatusSuccessCount()}"/>
+                                                        <span>
+                                                                <img src="images/ok.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right">
+                                                        <span th:text="${scheduler_model.getValue().getServedJobsStatusFailureCount()}"/>
+                                                        <span>
+                                                                <img src="images/error.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                         </td>
+                                                        <td class="text-right">
+                                                            <span th:text="${scheduler_model.getValue().getServedJobs().size()}"/>
+                                                            <span>
+                                                                    <img src="images/info.svg" width="22px" height="22px"/>
+                                                               </span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span class="badge badge-standard-width-small" th:text="${scheduler_model.getValue().getServedJobsStatusStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(scheduler_model.getValue().getServedJobsStatusStability())}></span>
+                                                        </td>
+                                                        <td class="text-center">
+                                                            <span th:switch="${scheduler_model.getValue().getPipelineSettings().getStatus()}">
+                                                                <img th:case="${T(job_scheduler.core.PipelineSettings).UNINITIALIZED}" src="images/question.svg" width="22px" height="22px"/>
+                                                                <img th:case="${T(job_scheduler.core.PipelineSettings).FAILED}" src="images/error.svg" width="22px" height="22px"/>
+                                                                <img th:case="${T(job_scheduler.core.PipelineSettings).OK}" src="images/ok.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+
+                                                    </tr>
+                                                    </tbody>
+
+                                                </table>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel-group">
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading" style="background-image: linear-gradient(to right, #3270b3, #3270b3);border-color : #3270b3;">
+                                            <h3 class="panel-title">
+                                                <span class="fa fa-cogs"></span>
+                                                <a class="left-right-space droparrow" data-toggle="collapse" th:href="@{#collapse} + ${scheduler_model.getKey()} + @{settings}" th:text="@{Settings}"> </a>
+                                                <button class="left-right-space pull-right icon-btn btn btn-primary" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{<b>} + ${T(job_scheduler.util.Util).formatVariableCount(scheduler_model.getValue().getPipelineSettings().getVariablesMap().size())} + @{</b>, will be removed from this pipeline (<b>} + ${scheduler_model.getKey()} + '</b>)'" th:data-group="${scheduler_model.getKey()}" data-on-confirm="onDeleteVariables" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove All Variables" style="width :18px;height :18px; border: none; background-image: linear-gradient(to right, #3270b3, #3270b3);border-color : #3270b3;" type="button"><span class="glyphicon-center glyphicon glyphicon-trash"></span></button>
+                                                <span class="badge pull-right left-right-space" th:text="${T(job_scheduler.util.Util).formatVariableCount(scheduler_model.getValue().getPipelineSettings().getVariablesMap().size())}" style="color: Green;"/>
+                                            </h3>
+                                        </div>
+                                        <div th:id="@{collapse} + ${scheduler_model.getKey()} + @{settings}" class="panel-collapse collapse">
+
+                                            <div class="row top-buffer"></div>
+
+                                            <div class="row left-right-space">
+                                                <table class="table table-striped table-bordered table-condensed table-hover">
+                                                    <caption style="border: inherit; background-color: #f6f6f8;">
+                                                        <span class="left-right-space fa fa-cogs"></span>
+                                                        <strong><span class="align-left">Variables</span></strong>
+                                                    </caption>
+
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="text-right">Variable Name</th>
+                                                        <th class="text-right">Variable Value</th>
+                                                        <th class="text-right"></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr class="highlight" th:each="settings : ${scheduler_model.getValue().getPipelineSettings().getVariablesMap().entrySet()}">
+                                                        <td class="text-right" th:text="${settings.getKey()}"/>
+                                                        <td class="text-right" th:text="${settings.getValue()}"/>
+                                                        <td class="text-center">
+                                                            <button class="icon-btn btn btn-primary" data-tooltip="Edit Variable" style="width :18px;height :18px; border: none;" th:data-group="${scheduler_model.getKey()}" th:data-group2="${settings.getKey()}"  th:data-group3="${settings.getValue()}" type="button" onclick="editVariable(this)"><span class="glyphicon-center fa fa-pencil"></span></button>
+                                                            <button class="icon-btn btn btn-primary" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{This variable (<b>} + ${settings.getKey()}+ @{</b>) will be removed.}" th:data-group="${settings.getKey()}" th:data-group2="${scheduler_model.getKey()}" data-on-confirm="onDeleteVariable" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove Variable" style="width :18px;height :18px; border: none;" type="button"><span class="glyphicon-center fa fa-minus"></span></button>
+                                                        </td>
+
+                                                    </tr>
+                                                    <tr class="highlight">
+                                                        <td/>
+                                                        <td/>
+                                                        <td class="text-center">
+                                                            <button class="icon-btn btn btn-primary" data-tooltip="Add Variable" style="width :18px;height :18px; border: none;" th:data-group="${scheduler_model.getKey()}" type="button" onclick="addVariable(this)"><span class="glyphicon-center fa fa-plus"></span></button>
+                                                        </td>
+                                                    </tr>
+
+                                                    </tbody>
+
+                                                </table>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="panel-group">
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading" style="background-image: linear-gradient(to right, #175873, #175873);border-color : #175873;">
+                                            <h3 class="panel-title">
+                                                <span class="fa fa-bolt"></span>
+                                                <a class="left-right-space droparrow" data-toggle="collapse" th:href="@{#collapse} + ${scheduler_model.getKey()} + @{served_jobs}" th:text="@{Served Jobs}"> </a>
+                                                <span class="pull-right left-right-space" th:switch="${scheduler_model.getValue().getServedJobsStatus()}">
+                                                        <img th:case="${T(job_scheduler.core.PipelineSettings).UNINITIALIZED}" src="images/question.svg" width="22px" height="22px"/>
+                                                        <img th:case="${T(job_scheduler.core.PipelineSettings).FAILED}" src="images/error.svg" width="22px" height="22px"/>
+                                                        <img th:case="${T(job_scheduler.core.PipelineSettings).OK}" src="images/ok.svg" width="22px" height="22px"/>
+                                                </span>
+                                                <span class="badge badge-standard-width pull-right left-right-space" th:text="@{Status:} + ' ' + ${scheduler_model.getValue().getServedJobsStatusStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(scheduler_model.getValue().getServedJobsStatusStability())}></span>
+                                                <span class="badge pull-right left-right-space" th:text="@{Failures:} + ' ' + ${T(job_scheduler.util.Util).formatJobCount(scheduler_model.getValue().getServedJobsStatusFailureCount())}" style="color: white;background-color: #E74C3C;"/>
+                                                <span class="badge pull-right left-right-space" th:text="@{Successes:} + ' ' + ${T(job_scheduler.util.Util).formatJobCount(scheduler_model.getValue().getServedJobsStatusSuccessCount())}" style="color: white;background-color: #2ECC71;"/>
+                                                <span class="badge pull-right left-right-space" th:text="@{Undetermined:} + ' ' + ${T(job_scheduler.util.Util).formatJobCount(scheduler_model.getValue().getServedJobsStatusUndeterminedCount())}" style="color: white;background-color: #FF7D00;"/>
+                                                <span class="badge pull-right left-right-space" th:text="${T(job_scheduler.util.Util).formatJobCount(scheduler_model.getValue().getServedJobs().size())}" style="color: Green;"/>
+                                            </h3>
+                                        </div>
+                                        <div th:id="@{collapse} + ${scheduler_model.getKey()} + @{served_jobs}" class="panel-collapse collapse">
+
+                                            <div class="row top-buffer"></div>
+
+                                            <div class="row left-right-space">
+                                                <table class="table table-striped table-bordered table-condensed table-hover">
+                                                    <caption style="border: inherit; background-color: #f6f6f8;">
+                                                        <span class="left-right-space fa fa-info-circle"></span>
+                                                        <strong><span class="align-left">Job Information</span></strong>
+                                                    </caption>
+
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="text-right">Job</th>
+                                                        <th class="text-center">Tag</th>
+                                                        <th class="text-center">Priority</th>
+                                                        <th class="text-center">Consistent</th>
+                                                        <th class="text-right">Parameters</th>
+                                                        <th class="text-right">Success</th>
+                                                        <th class="text-right">Failures</th>
+                                                        <th class="text-right">Executions</th>
+                                                        <th class="text-center">Stability</th>
+                                                        <th class="text-right">Duration</th>
+                                                        <th class="text-center">Status</th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr class="highlight" th:each="jobStatus : ${scheduler_model.getValue().getServedJobs()}">
+                                                        <td class="text-right" th:text="${jobStatus.getJobInfo().getJobData()}"/>
+                                                        <td class="text-center">
+                                                            <span th:if=${jobStatus.getJobInfo().getTag().isEmpty()} class="badge left-right-space" th:text="${T(job_scheduler.util.Util).convertTag(jobStatus.getJobInfo().getTag())}" style="font-size:11;color: red;background-color: #eaeaea;"/><span th:if=${!jobStatus.getJobInfo().getTag().isEmpty()} class="badge left-right-space" th:text="${T(job_scheduler.util.Util).convertTag(jobStatus.getJobInfo().getTag())}" style="color: #058ac6;background-color: #eaeaea;"/>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <span class="badge" th:text="${jobStatus.getJobInfo().getPriority()}" style="font-size:11;color: red;background-color: #eaeaea;"></span>
+                                                        </td>
+
+                                                        <td class="text-center" th:switch="${jobStatus.getJobInfo().isConsistent()}">
+
+                                                                <span th:case="${true}">
+                                                                    <img src="images/check_square.svg" width="18px" height="18px"/>
+                                                                </span>
+
+                                                            <span th:case="${false}">
+                                                                    <img src="images/square.svg" width="18px" height="18px"/>
+                                                                </span>
+
+                                                        </td>
+
+                                                        <td class="text-right">
+                                                                        <span th:if="${!jobStatus.getJobInfo().getAdditionalData().isEmpty()}">
+                                                                            <button class="left-right-space icon-btn btn btn-primary" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button" data-placement="bottom" data-html="true" data-toggle="popover-info" title="Additional Data" data-tooltip="Additional Data" th:data-content="${T(job_scheduler.util.Util).convertMessageNewLines(jobStatus.getJobInfo().getAdditionalData())}"><span class="glyphicon-center fa fa-commenting-o"></span></button>
+                                                                        </span>
+                                                            <span th:if="${!jobStatus.getJobInfo().getParams().isEmpty()}">
+                                                                            <button class="left-right-space icon-btn btn btn-primary" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button" data-placement="bottom" data-html="true" data-toggle="popover-info" title="Parameters" data-tooltip="Parameters" th:data-content="${T(job_scheduler.util.Util).convertMessageNewLines(jobStatus.getJobInfo().getParamsFormatted())}"><span class="glyphicon-center fa fa-cog"></span></button>
+                                                                        </span>
+                                                                    <span >
+                                                                            <button class="left-right-space icon-btn btn btn-primary" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button" data-placement="bottom" data-html="true" data-toggle="popover-info" title="Timestamp" data-tooltip="Timestamp" th:data-content="@{Registered:} + ' ' + ${jobStatus.getJobInfo().getCreationTimestamp()} + '<br>' + @{Served:} + ' ' + ${jobStatus.getJobInfo().getServedTimeStamp()} + '<br>' + @{Finalized:} + ' ' + ${jobStatus.getJobInfo().getFinalizedTimeStamp()}"><span class="glyphicon-center fa fa-clock-o"></span></button>
+                                                                        </span>
+
+                                                            <span >
+                                                            <button class="left-right-space icon-btn btn btn-primary" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button" data-placement="bottom" data-html="true" data-toggle="popover-info" title="Unique Id" data-tooltip="Unique Id" th:data-content="${jobStatus.getJobInfo().getUUID()}"><span class="glyphicon-center fa fa-hashtag"></span></button>
+                                                                </span>
+                                                        </td>
+
+                                                        <td class="text-right">
+                                                            <span th:text="${jobStatus.getSuccess()}"/>
+                                                            <span>
+                                                                <img src="images/ok.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span th:text="${jobStatus.getFailure()}"/>
+                                                            <span>
+                                                                <img src="images/error.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-right">
+                                                            <span th:text="${jobStatus.getRetries()}"/>
+                                                            <span>
+                                                                <img src="images/info.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <span class="badge badge-standard-width-small" th:text="${jobStatus.getStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(jobStatus.getStability())}></span>
+                                                        </td>
+
+                                                        <td class="text-right" th:text="${jobStatus.getJobInfo().getExecutionTimeFormatted()}"/>
+
+                                                        <td class="text-center">
+                                                            <span th:switch="${jobStatus.getStatus()}">
+                                                                <img th:case="${T(job_scheduler.core.PipelineSettings).UNINITIALIZED}" src="images/question.svg" width="22px" height="22px"/>
+                                                                <img th:case="${T(job_scheduler.core.PipelineSettings).FAILED}" src="images/error.svg" width="22px" height="22px"/>
+                                                                <img th:case="${T(job_scheduler.core.PipelineSettings).OK}" src="images/ok.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr th:class="${T(job_scheduler.util.Util).getStatusClass(scheduler_model.getValue().getServedJobsStatus())}">
+                                                         <td class="text-right">
+                                                               <span th:text="@{Total:} + ' ' + ${scheduler_model.getValue().getServedJobs().size()}" style="font-weight: bold;"/>
+                                                               <span>
+                                                                    <img src="images/info.svg" width="22px" height="22px"/>
+                                                               </span>
+                                                          </td>
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+
+                                                        <td class="text-right">
+                                                            <span th:text="${scheduler_model.getValue().getServedJobsSuccess()}" style="font-weight: bold;"/>
+                                                            <span>
+                                                                <img src="images/ok.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span th:text="${scheduler_model.getValue().getServedJobsFailures()}" style="font-weight: bold;"/>
+                                                            <span>
+                                                                <img src="images/error.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-right">
+                                                            <span th:text="${scheduler_model.getValue().getServedJobsExecutions()}" style="font-weight: bold;"/>
+                                                            <span>
+                                                                <img src="images/info.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <span class="badge badge-standard-width-small" th:text="${scheduler_model.getValue().getServedJobsStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(scheduler_model.getValue().getServedJobsStability())}></span>
+                                                        </td>
+
+                                                        <td class="text-right">
+                                                            <span th:text="${scheduler_model.getValue().getServedJobsExecutionTimeFormatted()}" style="font-weight: bold;"/>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <span th:text="${scheduler_model.getValue().getServedJobsStatusUndeterminedCount()}" style="font-weight: bold;"/>
+                                                            <span>
+                                                                <img src="images/question.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                            <span th:text="${scheduler_model.getValue().getServedJobsStatusSuccessCount()}" style="font-weight: bold;"/>
+                                                            <span>
+                                                                <img src="images/ok.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                            <span th:text="${scheduler_model.getValue().getServedJobsStatusFailureCount()}" style="font-weight: bold;"/>
+                                                            <span>
+                                                                <img src="images/error.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+
+                                                    </tr>
+
+
+                                                    <tr th:class="${T(job_scheduler.util.Util).getStatusClass(scheduler_model.getValue().getServedJobsStatus())}">
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+
+                                                        <td/>
+                                                        <td/>
+
+                                                        <td/>
+
+                                                        <td/>
+                                                        <td/>
+
+                                                        <td class="text-center">
+                                                            <span class="badge badge-standard-width-small" th:text="${scheduler_model.getValue().getServedJobsStatusStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(scheduler_model.getValue().getServedJobsStatusStability())}></span>
+                                                             <span th:switch="${scheduler_model.getValue().getServedJobsStatus()}">
+                                                                <img th:case="${T(job_scheduler.core.PipelineSettings).UNINITIALIZED}" src="images/question.svg" width="22px" height="22px"/>
+                                                                <img th:case="${T(job_scheduler.core.PipelineSettings).FAILED}" src="images/error.svg" width="22px" height="22px"/>
+                                                                <img th:case="${T(job_scheduler.core.PipelineSettings).OK}" src="images/ok.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+
+                                                    </tr>
+
+                                                    </tbody>
+
+                                                </table>
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div th:each="pipeline_model : ${scheduler_model.getValue().getPipelineMap().entrySet()}" class="panel-group">
+                                    <div class="panel panel-primary">
+                                        <div class="panel-heading" style="background-image: linear-gradient(to right, #193c60, #193c60);border-color : #193c60;">
+                                            <h3 class="panel-title">
+                                                <span class="fa fa-tag"></span>
+                                                <a class="left-right-space droparrow" data-toggle="collapse" th:href="@{#collapse} + ${scheduler_model.getKey()} + ${T(job_scheduler.util.Util).convertTagHash(pipeline_model.getKey())}"><span th:if=${pipeline_model.getKey().isEmpty()} class="badge left-right-space" th:text="${T(job_scheduler.util.Util).convertTag(pipeline_model.getKey())}" style="font-size:11;color: red;"/><span th:if=${!pipeline_model.getKey().isEmpty()} class="badge left-right-space" th:text="${T(job_scheduler.util.Util).convertTag(pipeline_model.getKey())}" style="color: #058ac6;"/></a>
+                                                    <button class="left-right-space pull-right icon-btn btn btn-primary" data-popout="true" data-singleton="true" data-html="true" th:data-content="'<b>' + ${T(job_scheduler.util.Util).formatJobCount(pipeline_model.getValue().size())} + '</b>, ' + @{will be removed from this tag} + ' (<b>' + ${T(job_scheduler.util.Util).convertTag(pipeline_model.getKey())}+ ')</b>'" th:data-group="${pipeline_model.getKey()}"  th:data-group2="${scheduler_model.getKey()}" data-on-confirm="onDeleteJobs" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove All Jobs" style="width :18px;height :18px; border: none; background-image: linear-gradient(to right, #193c60, #193c60);border-color : #193c60;" type="button"><span class="glyphicon-center glyphicon glyphicon-trash"></span></button>
+                                                    <button th:if="${pipeline_model.getValue().size() == 0}" class="left-right-space pull-right icon-btn btn btn-primary" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{This tag (<b>} + ${T(job_scheduler.util.Util).convertTag(pipeline_model.getKey())}+ @{</b>) will be removed.}" th:data-group="${pipeline_model.getKey()}" th:data-group2="${scheduler_model.getKey()}" data-on-confirm="onDeleteTag" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove Tag" style="width :18px;height :18px; border: none; background-image: linear-gradient(to right, #193c60, #193c60);border-color : #193c60;" type="button"><span class="glyphicon-center fa fa-minus"></span></button>
+                                                    <button th:if="${pipeline_model.getValue().size() > 0}" class="left-right-space pull-right icon-btn btn btn-primary" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{This tag (<b>} + ${T(job_scheduler.util.Util).convertTag(pipeline_model.getKey())}+ @{</b>), which contains} + ' <b>' + ${T(job_scheduler.util.Util).formatJobCount(pipeline_model.getValue().size())} + '</b>, ' + @{will be removed.}" th:data-group="${pipeline_model.getKey()}"  th:data-group2="${scheduler_model.getKey()}" data-on-confirm="onDeleteTag" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove Tag" style="width :18px;height :18px; border: none; background-image: linear-gradient(to right, #193c60, #193c60);border-color : #193c60;" type="button"><span class="glyphicon-center fa fa-minus"></span></button>
+                                                    <span class="badge pull-right left-right-space" th:text="${T(job_scheduler.util.Util).formatJobCount(pipeline_model.getValue().size())}" style="color: Green;"/>
+
+                                            </h3>
+
+                                        </div>
+                                        <div th:id="@{collapse} + ${scheduler_model.getKey()} + ${T(job_scheduler.util.Util).convertTagHash(pipeline_model.getKey())}" class="panel-collapse collapse">
+                                            <div class="panel-body">
+                                                <table class="table table-striped table-bordered table-condensed table-hover">
+                                                    <caption style="border: inherit; background-color: #f6f6f8;">
+                                                        <span class="left-right-space fa fa-bolt"></span>
+                                                        <strong><span class="align-left" th:text="@{Jobs}"/></strong>
+                                                    </caption>
+                                                    <thead>
+                                                    <tr>
+                                                        <th class="text-right">Job</th>
+                                                        <th class="text-center">Priority</th>
+                                                        <th class="text-center">Consistent</th>
+                                                        <th class="text-right">Average Time</th>
+                                                        <th class="text-right">Success Count</th>
+                                                        <th class="text-right">Failure Count</th>
+                                                        <th class="text-right">Total</th>
+                                                        <th class="text-center">Stability</th>
+                                                        <th class="text-right">Parameters</th>
+                                                        <th class="text-center"></th>
+                                                    </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                    <tr class="highlight" th:each="job : ${pipeline_model.getValue()}">
+                                                        <td class="text-right" th:text="${job.getInfo().getJobData()}"/>
+                                                        <td class="text-center">
+                                                            <span class="badge" th:text="${job.getInfo().getPriority()}" style="font-size:11;color: red;background-color: #eaeaea;"></span>
+                                                        </td>
+
+                                                        <td class="text-center" th:switch="${job.getInfo().isConsistent()}">
+
+                                                                <span th:case="${true}">
+                                                                    <img src="images/check_square.svg" width="18px" height="18px"/>
+                                                                </span>
+
+                                                            <span th:case="${false}">
+                                                                    <img src="images/square.svg" width="18px" height="18px"/>
+                                                                </span>
+
+                                                        </td>
+
+                                                        <td class="text-right" th:text="${job.getStats().getAverageTimeFormatted()}"/>
+                                                        <td class="text-right">
+                                                            <span th:text="${job.getStats().getSuccess_count()}"/>
+                                                            <span>
+                                                                <img src="images/ok.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+                                                        <td class="text-right">
+                                                            <span th:text="${job.getStats().getFail_count()}"/>
+                                                            <span>
+                                                                <img src="images/error.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-right">
+                                                            <span th:text="${job.getStats().getTotalExecutions()}"/>
+                                                            <span>
+                                                                <img src="images/info.svg" width="22px" height="22px"/>
+                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <span class="badge badge-standard-width-small" th:text="${job.getStats().getStabilityFormatted()}" style="font-size:11;color: white;" th:styleappend=${T(job_scheduler.util.Util).convertFactorToColor(job.getStats().getStability())}></span>
+                                                        </td>
+
+                                                        <td class="text-right">
+                                                                        <span th:if="${!job.getInfo().getAdditionalData().isEmpty()}">
+                                                                            <button class="left-right-space icon-btn btn btn-primary" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button" data-placement="bottom" data-html="true" data-toggle="popover-info" title="Additional Data" data-tooltip="Additional Data" th:data-content="${T(job_scheduler.util.Util).convertMessageNewLines(job.getInfo().getAdditionalData())}"><span class="glyphicon-center fa fa-commenting-o"></span></button>
+                                                                        </span>
+                                                                        <span th:if="${!job.getInfo().getParams().isEmpty()}">
+                                                                            <button class="left-right-space icon-btn btn btn-primary" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button" data-placement="bottom" data-html="true" data-toggle="popover-info" title="Parameters" data-tooltip="Parameters" th:data-content="${T(job_scheduler.util.Util).convertMessageNewLines(job.getInfo().getParamsFormatted())}"><span class="glyphicon-center fa fa-cog"></span></button>
+                                                                        </span>
+                                                                        <span >
+                                                                            <button class="left-right-space icon-btn btn btn-primary" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button" data-placement="bottom" data-html="true" data-toggle="popover-info" title="Registration Timestamp" data-tooltip="Timestamp" th:data-content="${job.getInfo().getCreationTimestamp()}"><span class="glyphicon-center fa fa-clock-o"></span></button>
+                                                                        </span>
+
+                                                                        <span >
+                                                                        <button class="left-right-space icon-btn btn btn-primary" style="width :18px;height :18px; border: none; background-color: #0c457d;" type="button" data-placement="bottom" data-html="true" data-toggle="popover-info" title="Unique Id" data-tooltip="Unique Id" th:data-content="${job.getInfo().getUUID()}"><span class="glyphicon-center fa fa-hashtag"></span></button>
+                                                                            </span>
+                                                        </td>
+
+                                                        <td class="text-center">
+                                                            <button class="icon-btn btn btn-primary" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{This job will be removed.}" th:data-group="${job.getInfo().getJobData()}" th:data-group2="${scheduler_model.getKey()}" th:data-group3="${pipeline_model.getKey()}" th:data-group4="${job.getInfo().getUUID()}" data-on-confirm="onDeleteJob" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove Job" style="width :18px;height :18px; border: none;" type="button"><span class="glyphicon-center fa fa-minus"></span></button>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="highlight">
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+                                                        <td/>
+                                                        <td class="text-center">
+                                                            <button class="icon-btn btn btn-primary" th:data-group="${scheduler_model.getKey()}" th:data-group2="${pipeline_model.getKey()}" th:data-group3="${T(job_scheduler.util.Util).convertTag(pipeline_model.getKey())}" onclick="addJob(this)" data-tooltip="Add Job" style="width :18px;height :18px; border: none;" type="button"><span class="glyphicon-center fa fa-plus"></span></button>
+                                                        </td>
+                                                    </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<form action="statistics"  method="get" id="go_to_statistics">
+
+</form>
+
+</body>
+</html>
