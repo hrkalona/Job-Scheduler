@@ -4,26 +4,15 @@
  It supports registering a pipeline, which can hold different tags. A job/task can be added under a particular tag.
  Here is the tree-like structure:
  
- pipeline_name
- 
-  |_ tag1
-  
-  |    |_ job1
-  
-  |    |_ job2
-  
-  |    |_ job3
-  
-  |
-  
-  |_ tag2
-  
-       |_ job4
-       
-       |_ job5
-       
-       |_ job6
-       
+ * pipeline_name
+   * tag1
+     * job1
+     * job2
+     * job3
+   * tag2
+     * job4
+     * job5
+     * job6
        
 The jobs can have priorities assigned to them, so all jobs under one tag will be sorted by priority.
 
