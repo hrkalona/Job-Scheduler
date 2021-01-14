@@ -24,6 +24,8 @@ public class JobInfo implements Comparable<JobInfo> {
     private long endTime;
     private final Map<String, String> params;
 
+    private String host;
+
     public JobInfo() {
     	jobData = "";
     	additionalData = "";
@@ -38,6 +40,7 @@ public class JobInfo implements Comparable<JobInfo> {
         params = new TreeMap<>();
         startTime = -1;
         endTime = -1;
+        host = "";
     }
     
     public JobInfo(String jobData, String additionalData, long priority, String tag, boolean consistent, Map<String, String> params) {
@@ -55,6 +58,7 @@ public class JobInfo implements Comparable<JobInfo> {
         uuid = UUID.randomUUID().toString();
         this.params = new TreeMap<>();
         this.params.putAll(params);
+        host = "";
     }
 
     public JobInfo(JobInfo other) {
@@ -72,6 +76,7 @@ public class JobInfo implements Comparable<JobInfo> {
         uuid = other.uuid;
         params = new TreeMap<>();
         params.putAll(other.params);
+        host = other.host;
     }
 
     public String getJobData() {
@@ -167,6 +172,14 @@ public class JobInfo implements Comparable<JobInfo> {
         }
         return temp;
 
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
     }
 
 	public int compareTo(JobInfo o) {

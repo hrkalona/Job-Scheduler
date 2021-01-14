@@ -118,23 +118,32 @@ public class Util {
 
         if(duration < 1000)
         {
-            return duration == 1 ? duration + " millisecond" : duration + " milliseconds";
+            return duration == 1 ? (int)duration + " millisecond" : (int)duration + " milliseconds";
         }
 
         if(duration >= 1000 && duration < 60 * 1000)
         {
             double value = duration / 1000.0;
-            return value == 1 ? String.format("%.2f", value) + " second" : String.format("%.2f", value) + " seconds";
+
+            String strVal = String.format("%.2f", value);
+
+            return strVal.equals("1.00") ? strVal + " second" : strVal + " seconds";
         }
 
         if(duration >= 60 * 1000 && duration < 60 * 60 * 1000)
         {
             double value = duration / (1000.0 * 60);
-            return value == 1 ? String.format("%.2f", value) + " minute" : String.format("%.2f", value) + " minutes";
+
+            String strVal = String.format("%.2f", value);
+
+            return strVal.equals("1.00") ? strVal + " minute" : strVal + " minutes";
         }
 
         double value = duration / (60 * 60 * 1000.0);
-        return value == 1 ? String.format("%.2f", value) + " hour" : String.format("%.2f", value) + " hours";
+
+        String strVal = String.format("%.2f", value);
+
+        return strVal.equals("1.00") ? strVal + " hour" : strVal + " hours";
 
     }
 

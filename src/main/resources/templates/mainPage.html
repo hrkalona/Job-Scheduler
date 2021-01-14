@@ -13,9 +13,32 @@
     <script src="js/bootbox.locales.min.js"></script>
     <script src="js/bootstrap-confirmation.min.js"></script>
 
-    <meta http-equiv="refresh" content="60"/>
+    <meta http-equiv="refresh" content="121"/>
 
     <script>
+
+        function startTimer(duration, display) {
+            var timer = duration, minutes, seconds;
+            setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = " " + minutes + ":" + seconds;
+
+                if (--timer < 0) {
+                    timer = duration;
+                }
+            }, 1000);
+        }
+
+        window.onload = function () {
+            var twoMinutes = 60 * 2,
+                display = document.querySelector('#time');
+            startTimer(twoMinutes, display);
+        };
 
         $(document).ready(function(){
             $('[data-toggle="popover-error"]').popover();
@@ -441,6 +464,10 @@ function post(path, params, method) {
 
         <div class="pull-left left-right-space">
             <button class="icon-btn btn btn-primary btn-block" data-popout="true" data-singleton="true" data-html="true" th:data-content="@{All the pipelines (<b>} + ${schedulerModel.getSchedulerModel().size()}+ @{</b>) and their jobs (<b>} + ${schedulerModel.getAggregateRemainingJobCount()}+ @{</b>) will be removed.}" data-on-confirm="onDeleteAll" data-btn-ok-class="btn-primary" data-btn-cancel-class="btn-danger" data-toggle="confirmation" data-placement="bottom" data-tooltip="Remove All Pipelines" type="button"><span class="glyphicon-center glyphicon glyphicon-trash"></span></button>
+        </div>
+
+        <div class="pull-left left-right-space">
+            <button class="timer-btn btn btn-primary btn-block" onclick="window.location.reload();" data-tooltip="Refresh Information" type="button"><span class="glyphicon glyphicon-repeat"></span><span id="time" style="font-size: 16px;"> 02:00</span></button>
         </div>
 
         <div class="pull-left left-right-space">
@@ -1014,6 +1041,7 @@ function post(path, params, method) {
                                                         <th class="text-center">Priority</th>
                                                         <th class="text-center">Consistent</th>
                                                         <th class="text-right">Parameters</th>
+                                                        <th class="text-right">Host</th>
                                                         <th class="text-right">Success</th>
                                                         <th class="text-right">Failures</th>
                                                         <th class="text-right">Executions</th>
@@ -1062,6 +1090,10 @@ function post(path, params, method) {
                                                         </td>
 
                                                         <td class="text-right">
+                                                            <span th:text="${jobStatus.getJobInfo().getHost()}"/>
+                                                        </td>
+
+                                                        <td class="text-right">
                                                             <span th:text="${jobStatus.getSuccess()}"/>
                                                             <span>
                                                                 <img src="images/ok.svg" width="22px" height="22px"/>
@@ -1103,6 +1135,7 @@ function post(path, params, method) {
                                                                     <img src="images/info.svg" width="22px" height="22px"/>
                                                                </span>
                                                           </td>
+                                                        <td/>
                                                         <td/>
                                                         <td/>
                                                         <td/>
@@ -1166,6 +1199,7 @@ function post(path, params, method) {
 
                                                         <td/>
 
+                                                        <td/>
                                                         <td/>
                                                         <td/>
 

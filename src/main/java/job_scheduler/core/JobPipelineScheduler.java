@@ -9,6 +9,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.servlet.http.HttpServletRequest;
+
 @RestController
 public class JobPipelineScheduler {
 	public static final String DEFAULT_TAG = "";
@@ -531,7 +533,7 @@ public class JobPipelineScheduler {
     }
     
     @RequestMapping("/get_job")
-    public JobInfo getJob(@RequestParam(value="pipeline_id") String pipeline_id, @RequestParam(value="tags", defaultValue=DEFAULT_TAG)String tags, @RequestParam(value="clean_up", defaultValue="false")boolean clean_up, @RequestParam(value="global_priority", defaultValue="false")boolean global_priority, @RequestParam(value="tag_override", defaultValue=DEFAULT_TAG)String tag_override) {
+    public JobInfo getJob(@RequestParam(value="pipeline_id") String pipeline_id, @RequestParam(value="tags", defaultValue=DEFAULT_TAG)String tags, @RequestParam(value="clean_up", defaultValue="false")boolean clean_up, @RequestParam(value="global_priority", defaultValue="false")boolean global_priority, @RequestParam(value="tag_override", defaultValue=DEFAULT_TAG)String tag_override, HttpServletRequest request) {
     	
     	ArrayList<String> tokens = parseTokens(tags, tag_override);
     	
@@ -563,6 +565,7 @@ public class JobPipelineScheduler {
 
 			job.setServedTimeStamp(LocalDateTime.now().toString());
     		job.setStartTime(System.currentTimeMillis());
+    		job.setHost(request.getRemoteHost());
 
 			ArrayList<JobStatus> servedJobs = servedJobsPerPipeline.get(pipeline_id);
 

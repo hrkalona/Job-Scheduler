@@ -181,6 +181,13 @@ input::-webkit-calendar-picker-indicator {
   position: relative;
 }
 
+.timer-btn {
+  text-align: center;
+  width: 85px;
+  height: 32px;
+  position: relative;
+}
+
 
 .table-striped > tbody > tr:nth-child(odd).highlight>td,
 .table-striped>tbody>tr:nth-child(odd).highlight>th {
